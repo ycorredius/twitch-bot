@@ -1,4 +1,5 @@
 const tmi = require('tmi.js')
+require('dotenv').config()
 
 
 const opts = {
@@ -28,8 +29,8 @@ function onMessageHandler (target, context, msg, self) {
   // If the command is known, let's execute it
   if (commandName === '!dice') {
     const num = rollDice();
-    client.say(target, `${t} rolled a ${num}`);
-    console.log(target)
+    // const userName = target.slice(1..target.length)
+    client.say(target, `You rolled a ${num}`);
     console.log(`* Executed ${commandName} command`);
   } else {
     console.log(`* Unknown command ${commandName}`);
