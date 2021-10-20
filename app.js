@@ -4,10 +4,16 @@ const path = require('path')
 const tmi = require('tmi.js')
 require('dotenv').config()
 const port = process.env.PORT || "8080"
+let upVotes = 0;
+let downVotes = 0;
+
 
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 
+app.get( '/', (req,res)=>{
+  res.render('vote',{upVotes,downVotes})
+})
 
 const opts = {
 	identity: {
@@ -40,8 +46,15 @@ function onMessageHandler (target, context, msg, self) {
       client.say(target, `You rolled a ${num}`);
       console.log(`* Executed ${commandName} command`);
       break;
-    case "!vote":
-      client.say(target, `@${name} voted!`)
+    case "!upvote":
+      client.say(target, `@${name} you up voted!`);
+      console.log(`Up vote added`)
+      upvote()
+      break;
+    case "!downvote":
+      client.say(target, `@${name} you down voted!`)
+      downvote()
+      console.log(`Down votes added`)
       break;
     case "!insult":
       const thisInsult = insult(name)
@@ -66,7 +79,13 @@ function rollDice () {
 function insult(target){
   return `@${target}...  You're mother looks like an ogre!`
 }
+function upvote(){
+  upVotes = upVotes + 1 ;
+}
 
+function downvote(){
+  downVotes = downVotes + 1;
+}
 // Called every time the bot connects to Twitch chat
 function onConnectedHandler (addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
