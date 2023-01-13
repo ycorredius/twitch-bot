@@ -2,6 +2,9 @@ const express = require('express')
 const app = express()
 const path = require('path')
 const tmi = require('tmi.js')
+const bannedWords = require('./bannedWords.json')
+const fs = require('fs')
+
 require('dotenv').config()
 const port = process.env.PORT || "8080"
 let upVotes = 0;
@@ -16,11 +19,11 @@ app.get( '/', (req,res)=>{
 })
 
 const opts = {
+  options: {debug: true},
 	identity: {
-		username: process.env.BOT_USERNAME,
-		password: process.env.OAUTH_TOKEN
+		username: process.env.BOT_USER_NAME,
+		password: process.env.BOT_OAUTH_TOKEN
 	},
-
 	channels: [
 		process.env.CHANNEL_NAME
 	]
@@ -31,7 +34,7 @@ const client = new tmi.client(opts);
 client.on('message', onMessageHandler);
 client.on('connected', onConnectedHandler);
 
-client.connect();
+client.connect().catch(console.error);
 
 function onMessageHandler (target, context, msg, self) {
   if (self) { return; } // Ignore messages from the bot
@@ -62,8 +65,7 @@ function onMessageHandler (target, context, msg, self) {
       console.log(`* Executed ${commandName} command`);
       break;
       case '!info':
-       console.log(`${context}`)
-       console.log(`${self}`)
+       
        break;
     default:
           console.log(`* Unknown command ${commandName}`);
